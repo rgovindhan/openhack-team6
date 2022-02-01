@@ -41,6 +41,36 @@ public class Function {
         }
     }
 
+    @FunctionName("GetRating")
+    public HttpResponseMessage getRating(
+            @HttpTrigger(name = "ratingId", methods = {
+                    HttpMethod.GET }, authLevel = AuthorizationLevel.ANONYMOUS) HttpRequestMessage<Optional<String>> request,
+            final ExecutionContext context) {
+        context.getLogger().info("GetRating API Request");
+
+        final String ratingId = request.getQueryParameters().get("ratingId");
+        context.getLogger().info("Received GetRating API Request for ratingId " + ratingId);
+
+        RatingService ratingService = new RatingServiceImpl();
+
+        if (ratingId == null) {
+            return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body("Require parameter ratingId").build();
+        }
+
+        Rating rating = ratingService.getRatingById(ratingId);
+        if (rating != null) {
+            return request.createResponseBuilder(HttpStatus.OK)
+                    .body(rating)
+                    .header("Content-Type", "application/json")
+                    .build();
+        } else {
+            return request.createResponseBuilder(HttpStatus.NOT_FOUND)
+                    .body("No rating with id " + ratingId)
+                    .header("Content-Type", "application/json")
+                    .build();
+        }
+    }
+
     @FunctionName("CreateRating")
     public HttpResponseMessage create(
             @HttpTrigger(
