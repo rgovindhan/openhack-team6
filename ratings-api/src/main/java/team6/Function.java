@@ -20,17 +20,15 @@ import java.util.Optional;
  */
 public class Function {
     /**
-     * This function listens at endpoint "/api/HttpExample". Two ways to invoke it using "curl" command in bash:
+     * This function listens at endpoint "/api/HttpExample". Two ways to invoke it
+     * using "curl" command in bash:
      * 1. curl -d "HTTP Body" {your host}/api/HttpExample
      * 2. curl "{your host}/api/HttpExample?name=HTTP%20Query"
      */
     @FunctionName("HttpExample")
     public HttpResponseMessage run(
-            @HttpTrigger(
-                name = "req",
-                methods = {HttpMethod.GET, HttpMethod.POST},
-                authLevel = AuthorizationLevel.ANONYMOUS)
-                HttpRequestMessage<Optional<String>> request,
+            @HttpTrigger(name = "req", methods = { HttpMethod.GET,
+                    HttpMethod.POST }, authLevel = AuthorizationLevel.ANONYMOUS) HttpRequestMessage<Optional<String>> request,
             final ExecutionContext context) {
         context.getLogger().info("Java HTTP trigger processed a request.");
 
@@ -39,7 +37,8 @@ public class Function {
         final String name = request.getBody().orElse(query);
 
         if (name == null) {
-            return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body("Please pass a name on the query string or in the request body").build();
+            return request.createResponseBuilder(HttpStatus.BAD_REQUEST)
+                    .body("Please pass a name on the query string or in the request body").build();
         } else {
             return request.createResponseBuilder(HttpStatus.OK).body("Hello, " + name).build();
         }
@@ -47,33 +46,31 @@ public class Function {
 
     @FunctionName("GetRating")
     public HttpResponseMessage getRating(
-            @HttpTrigger(
-                name = "ratingId",
-                methods = {HttpMethod.GET},
-                authLevel = AuthorizationLevel.ANONYMOUS)
-                HttpRequestMessage<Optional<String>> request,
+            @HttpTrigger(name = "ratingId", methods = {
+                    HttpMethod.GET }, authLevel = AuthorizationLevel.ANONYMOUS) HttpRequestMessage<Optional<String>> request,
             final ExecutionContext context) {
-        context.getLogger().info("Java HTTP trigger processed a request.");
+        context.getLogger().info("GetRating API Request");
+
+        final String ratingId = request.getQueryParameters().get("ratingId");
+        context.getLogger().info("Received GetRating API Request for ratingId " + ratingId);
 
         RatingService ratingService = new RatingServiceImpl();
-        
-        // Parse query parameter
-        final String ratingId = request.getQueryParameters().get("ratingId");
 
         if (ratingId == null) {
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body("Require parameter ratingId").build();
         }
+
         Rating rating = ratingService.getRatingById(ratingId);
-        if(rating!=null){
+        if (rating != null) {
             return request.createResponseBuilder(HttpStatus.OK)
-            .body(rating)
-            .header("Content-Type", "application/json")
-            .build();
-        }else{
+                    .body(rating)
+                    .header("Content-Type", "application/json")
+                    .build();
+        } else {
             return request.createResponseBuilder(HttpStatus.NOT_FOUND)
-            .body("No rating with id " + ratingId)
-            .header("Content-Type", "application/json")
-            .build();
+                    .body("No rating with id " + ratingId)
+                    .header("Content-Type", "application/json")
+                    .build();
         }
     }
 }
