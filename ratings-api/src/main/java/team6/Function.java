@@ -73,4 +73,46 @@ public class Function {
                     .build();
         }
     }
+
+    @FunctionName("CreateRating")
+    public HttpResponseMessage create(
+            @HttpTrigger(
+                name = "createRating",
+                methods = {HttpMethod.GET, HttpMethod.POST},
+                authLevel = AuthorizationLevel.ANONYMOUS)
+                HttpRequestMessage<Optional<String>> request,
+            final ExecutionContext context) {
+                
+        context.getLogger().info("Create Rating HTTP trigger processed a request.");
+
+        final String userId = parseFromQueryOrBody(request, "userId");
+        final String productId = parseFromQueryOrBody(request, "productId");
+        final String locationName = parseFromQueryOrBody(request, "locationName");
+        final String rating = parseFromQueryOrBody(request, "rating");
+        final String userNotes = parseFromQueryOrBody(request, "userNotes");
+
+        StringBuilder builder = new StringBuilder();
+        builder.append("{").append('\n');
+        builder.append("id: ").append("79c2779e-dd2e-43e8-803d-ecbebed8972c").append('\n');
+        builder.append("userId: ").append(userId).append('\n');
+        builder.append("productId: ").append(productId).append('\n');
+        builder.append("timestamp: ").append("2018-05-21 21:27:47Z").append('\n');
+        builder.append("locationName: ").append(locationName).append('\n');
+        builder.append("rating: ").append(rating).append('\n');
+        builder.append("userNotes: ").append(userNotes).append('\n');
+        builder.append("}");
+
+        if (userId == null) {
+            return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body("Please pass a name on the query string or in the request body").build();
+        } else {
+            return request.createResponseBuilder(HttpStatus.OK).header("Content-Type", "application/json").body(builder.toString()).build();
+        }
+    }
+
+    private String parseFromQueryOrBody(HttpRequestMessage<Optional<String>> request, String key) {
+        // Parse query parameter
+        final String query = request.getQueryParameters().get(key);
+        final String value = request.getBody().orElse(query);
+        return value;
+    }
 }
