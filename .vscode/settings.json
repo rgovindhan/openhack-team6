@@ -1,7 +1,0 @@
-{
-    "azureFunctions.javaBuildTool": "maven",
-    "azureFunctions.deploySubpath": "ratings-api/target/azure-functions/ratings-api-20220201152025922",
-    "azureFunctions.projectLanguage": "Java",
-    "azureFunctions.projectRuntime": "~4",
-    "azureFunctions.preDeployTask": "package (functions)"
-}
