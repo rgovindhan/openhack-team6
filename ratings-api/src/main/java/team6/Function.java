@@ -20,6 +20,7 @@ import team6.service.RatingService;
 import team6.service.RatingServiceImpl;
 
 import java.util.Calendar;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -100,5 +101,31 @@ public class Function {
             .header("Content-Type", "application/json")
             .body(rating)
             .build();
+    }
+
+    @FunctionName("GetRatings")
+    public HttpResponseMessage getRatings(
+            @HttpTrigger(name = "req", methods = {HttpMethod.GET},
+                        authLevel = AuthorizationLevel.ANONYMOUS, 
+                        route = "ratings/{userId}") HttpRequestMessage<Optional<String>> request,
+                    @CosmosDBInput(name = "ratingsInput",
+                        databaseName = "ratings-db",
+                        collectionName = "ratings-container",
+                        sqlQuery = "select * from ratingsInput r where r.userId = {userId}",
+                        connectionStringSetting = "CosmosDbConnectionString") Optional<List<Rating>> ratingsFromDb,
+            final ExecutionContext context) {
+        context.getLogger().info("GetRating API Request");
+
+        if (ratingsFromDb.isPresent()) {
+            return request.createResponseBuilder(HttpStatus.OK)
+                    .body(ratingsFromDb.get())
+                    .header("Content-Type", "application/json")
+                    .build();
+        } else {
+            return request.createResponseBuilder(HttpStatus.NOT_FOUND)
+                    .body("No ratings with user id ")
+                    .header("Content-Type", "application/json")
+                    .build();
+        }
     }
 }
