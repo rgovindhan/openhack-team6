@@ -16,10 +16,11 @@ public class Rating {
 
     private String userNotes;
 
-    private Calendar timestamp;
+    private String timestamp;
 
-    public Rating(String id, String userId, String productId, String locationName, int rating, String userNotes,
-            Calendar timestamp) {
+    public Rating() {}
+
+    public Rating(String id, String userId, String productId, String locationName, int rating, String userNotes, String timestamp) {
         this.id = id;
         this.userId = userId;
         this.productId = productId;
@@ -77,12 +78,14 @@ public class Rating {
         this.userNotes = userNotes;
     }
 
-    public Calendar getTimestamp() {
+    public String getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(Calendar timestamp) {
+    public void setTimestamp(String timestamp) {
         this.timestamp = timestamp;
     }
+
+
 
 }
